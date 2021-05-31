@@ -1,0 +1,1 @@
+# myscenery_automationscript
