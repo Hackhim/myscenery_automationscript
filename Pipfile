@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pyrtable = "==0.7.11"
+octorest = "==0.4"
+python-multipart = "==0.0.5"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
