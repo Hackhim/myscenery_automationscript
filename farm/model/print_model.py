@@ -3,7 +3,7 @@ from pyrtable.fields import StringField, MultipleRecordLinkField, SingleRecordLi
 
 from . import Base
 
-class PrintModel(Base):
+class PrintModelRecord(Base):
     class Meta:
         table_id = 'TPROD_PrintModel'
     
@@ -11,4 +11,10 @@ class PrintModel(Base):
     printfiles = MultipleRecordLinkField('Gcodes', linked_class='farm.model.printfile.PrintFileRecord')
 
     def __repr__(self):
-        return f'<PrintModel: name=({self.name})>'
+        return f'<PrintModelRecord: name=({self.name})>'
+    
+    def get_gcode_for_printer_profile(self, printer_profile, default=None):
+        for printfile in self.printfiles:
+            if printfile.printer_profile.slug == printer_profile.slug:
+                return printfile
+        return default

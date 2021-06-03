@@ -39,6 +39,7 @@ class PrinterProfileRecord(Base):
         table_id = 'TPROD_PrinterProfiles'
     
     name = StringField('Name', read_only=True)
+    slug = StringField('Slug', read_only=True)
     brand = SingleSelectionField('Brand', read_only=True)
     manufacturer = SingleSelectionField('Manufacturer', read_only=True)
     #price = IntegerField('Price', read_only=True)
@@ -227,16 +228,20 @@ class Printer:
     def can_print(self, filetoprint):
         can_print = False
         
+        printfile = filetoprint.print_model.get_gcode_for_printer_profile(self.record.profile)
+        if not printfile:
+            return False
+        
         if self.record.group and filetoprint.printer_group:
             can_print = (
                 self.does_filetoprint_group_match(filetoprint)
-                and self.fit_in_bed(filetoprint.printfile)
+                and self.fit_in_bed(printfile)
             )
         elif not self.record.group and not filetoprint.printer_group:
             can_print = (
-                self.have_enough_filament(filetoprint)
+                self.have_enough_filament_for(printfile)
                 and self.does_filetoprint_color_match(filetoprint)
-                and self.fit_in_bed(filetoprint.printfile)
+                and self.fit_in_bed(printfile)
             )
         
         return can_print
@@ -249,8 +254,8 @@ class Printer:
     def does_filetoprint_color_match(self, filetoprint):
         return self.record.filament.profile.color == filetoprint.color
     
-    def have_enough_filament(self, filetoprint):
-        return self.record.filament.weight_remaining >= filetoprint.printfile.get_weight_used(self.record.filament.profile)
+    def have_enough_filament_for(self, printfile):
+        return self.record.filament.weight_remaining >= printfile.get_weight_used(self.record.filament.profile)
 
     def does_filetoprint_group_match(self, filetoprint):
         return self.record.group.name == filetoprint.printer_group.name

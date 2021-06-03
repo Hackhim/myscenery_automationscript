@@ -15,6 +15,8 @@ class PrintFileRecord(Base):
     size_x = IntegerField('Size x', read_only=True)
     size_y = IntegerField('Size y', read_only=True)
     size_z = IntegerField('Size z', read_only=True)
+    
+    printer_profile = SingleRecordLinkField('Printer Profile', linked_class='farm.model.printer.PrinterProfileRecord')
 
     def __repr__(self):
         return f'<PrintFileRecord: name=({self.name})>'

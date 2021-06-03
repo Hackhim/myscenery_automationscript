@@ -1,26 +1,28 @@
-import requests
-import json
-import urllib
-import time
 import threading
 import datetime
 import os
 import uuid
 
-from .model.printer import Printer, PrinterRecord, Status
+from smb.SMBConnection import SMBConnection
+from dotenv import load_dotenv
+load_dotenv()
+
+from .model.printer import Printer, PrinterRecord
 from .model.file_to_print import FileToPrintRecord
 from .model.print import PrintRecord, State
 
+
 class Farm():
 
-    GCODES_DIR = './gcodes'
+    GCODES_DIR = os.getenv('LOCAL_GCODES_FOLDER_PATH')
 
     def __init__(self):
         self.launched_prints = []
 
         init_functions = [
             self.__create_printers,
-            self.__create_printqueue
+            self.__create_printqueue,
+            self.__connect_to_smb,
         ]
         threads = []
         for init_func in init_functions:
@@ -92,16 +94,50 @@ class Farm():
             if printer.record.name == name:
                 return printer
         return None
+    
+
+    def __connect_to_smb(self):
+        share_name = os.getenv('SMB_SHARE')
+        userID = os.getenv('SMB_USERID')
+        password = os.getenv('SMB_PASSWD')
+        host = os.getenv('SMB_HOST')
+        port = 455
+        client_machine_name=''
+        server_name=''
+        domain_name=''
+
+        conn = SMBConnection(userID, password, client_machine_name, server_name, domain=domain_name, use_ntlm_v2=True, is_direct_tcp=True)
+        conn.connect(host, port)
+        shares = conn.listShares()
+        share_con = None
+        
+        for share in shares:
+            if share.name == share_name:
+                share_con = share
+
+        self.smb_con = conn
+        self.share = share_con
+    
+    def file_exists_on_nas(self, remote_path):
+        shared_files = self.smb_con.listPath(self.share.name, remote_path)
+        filename = os.path.basename(remote_path)
+        for shared_file in shared_files:
+            if filename == shared_file.filename:
+                return True
+        return False
+
+    def download_gcode_from_nas(self, remote_path, local_path):
+        f = open(local_path, 'wb')
+        self.smb_con.retrieveFile(self.share.name, remote_path, f)
+        f.close()
 
 
 
-
-
-    def get_next_printer(self):
-        next_printer = PrinterRecord.get_next()
-        if next_printer:
-            next_printer = self.__find_printer_by_record(next_printer)
-        return next_printer
+#    def get_next_printer(self):
+#        next_printer = PrinterRecord.get_next()
+#        if next_printer:
+#            next_printer = self.__find_printer_by_record(next_printer)
+#        return next_printer
 
 
     def launch_prints(self):
@@ -146,7 +182,6 @@ class Farm():
         threads = []
         matched_printers = self.match_printer_printqueue_group()
 
-        
         for (printer, ftp) in matched_printers:
             t = threading.Thread(target=self.launch_single_print, args=(ftp, printer,))
             threads.append(t)
@@ -167,7 +202,7 @@ class Farm():
                     yield (printer, file_to_print)
                     break
 
-    
+
     def get_ready_printers_in_group(self):
         printers_records = PrinterRecord.get_ready_in_group()
         ready_printers = []
@@ -181,9 +216,15 @@ class Farm():
 
 
     def launch_single_print(self, file_to_print, printer):
-        filename = file_to_print.printfile.name
+        printfile = file_to_print.print_model.get_gcode_for_printer_profile(printer.record.profile)
+        filename = printfile.name
         local_path = f"{Farm.GCODES_DIR}/{uuid.uuid4()}_{filename}"
-        file_to_print.printfile.gcode[0].download_to(local_path)
+        remote_path = os.path.join(printfile.printer_profile.slug, filename)
+        
+        if not self.file_exists_on_nas(remote_path):
+            raise(Exception(f'Path: {remote_path} not found in NAS.'))
+        
+        self.download_gcode_from_nas(remote_path, local_path)
 
         printer.clear_upload_directory()
         printer.upload( (filename, open(local_path, 'rb')) )
