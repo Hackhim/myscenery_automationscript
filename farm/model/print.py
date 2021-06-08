@@ -1,9 +1,8 @@
 import datetime
 import enum
-from pyrtable.fields import StringField, SingleSelectionField, BooleanField, IntegerField, DateTimeField, SingleRecordLinkField
+from pyrtable.fields import StringField, SingleSelectionField, DateTimeField, SingleRecordLinkField
 
 from . import Base
-
 
 class State(enum.Enum):
     IN_PROGRESS = 'In Progress'

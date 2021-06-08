@@ -1,5 +1,5 @@
 import enum
-from pyrtable.fields import StringField, SingleSelectionField, BooleanField, AttachmentField, MultipleRecordLinkField, SingleRecordLinkField, IntegerField, FloatField
+from pyrtable.fields import StringField, SingleSelectionField, BooleanField, SingleRecordLinkField, FloatField
 
 from . import Base
 

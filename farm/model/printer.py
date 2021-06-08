@@ -1,11 +1,10 @@
-import datetime
 import sys
 import enum
 from pyrtable.fields import IntegerField, StringField, SingleSelectionField, BooleanField, MultipleRecordLinkField, SingleRecordLinkField
 
 from . import Base
 from .octoprint import Octoprint
-from .print import PrintRecord, State
+from .print import PrintRecord
 
 OCTOPRINT_TIMEOUT = 10
 

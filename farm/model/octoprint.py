@@ -1,15 +1,10 @@
 from octorest import OctoRest
 
-import os
 from contextlib import contextmanager
 from urllib import parse as urlparse
-from typing import Optional, Tuple
-from enum import Enum
 from time import sleep
 
-import requests
 from requests_toolbelt.multipart import encoder
-
 
 
 class Octoprint(OctoRest):

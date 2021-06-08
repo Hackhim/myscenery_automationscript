@@ -1,5 +1,4 @@
-import enum
-from pyrtable.fields import StringField, MultipleRecordLinkField, SingleRecordLinkField
+from pyrtable.fields import StringField, MultipleRecordLinkField
 
 from . import Base
 
