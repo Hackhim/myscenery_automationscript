@@ -27,3 +27,7 @@ class PrintFileRecord(Base):
         p = round(v * filament_profile.density, 2)
 
         return p
+    
+    def build_path(self):
+        gcode_path = f'{self.printer_profile.slug}/{self.name}'
+        return gcode_path

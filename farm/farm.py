@@ -2,6 +2,7 @@ import threading
 import datetime
 import os
 import uuid
+import sys
 
 from smb.SMBConnection import SMBConnection
 from dotenv import load_dotenv
@@ -15,6 +16,7 @@ from .model.print import PrintRecord, State
 class Farm():
 
     GCODES_DIR = os.getenv('LOCAL_GCODES_FOLDER_PATH')
+    SMB_REMOTE_PATH = os.getenv('REMOTE_GCODES_FOLDER_PATH')
 
     def __init__(self):
         self.launched_prints = []
@@ -119,7 +121,7 @@ class Farm():
         self.share = share_con
     
     def file_exists_on_nas(self, remote_path):
-        shared_files = self.smb_con.listPath(self.share.name, remote_path)
+        shared_files = self.smb_con.listPath(self.share.name, os.path.dirname(remote_path))
         filename = os.path.basename(remote_path)
         for shared_file in shared_files:
             if filename == shared_file.filename:
@@ -145,12 +147,17 @@ class Farm():
         matched_printers = self.match_printer_printqueue()
 
         for (printer, ftp) in matched_printers:
-            t = threading.Thread(target=self.launch_single_print, args=(ftp, printer,))
-            threads.append(t)
-            t.start()
-
-        for t in threads:
-            t.join()
+            try:
+                self.launch_single_print(ftp, printer)
+            except Exception as e:
+                print(f'{printer}\n{ftp}', file=sys.stderr)
+                print(e, file=sys.stderr)
+        #    t = threading.Thread(target=self.launch_single_print, args=(ftp, printer,))
+        #    threads.append(t)
+        #    t.start()
+        #
+        #for t in threads:
+        #    t.join()
 
 
     def match_printer_printqueue(self):
@@ -217,13 +224,12 @@ class Farm():
 
     def launch_single_print(self, file_to_print, printer):
         printfile = file_to_print.print_model.get_gcode_for_printer_profile(printer.record.profile)
-        print(printfile)
         filename = printfile.name
         local_path = f"{Farm.GCODES_DIR}/{uuid.uuid4()}_{filename}"
-        remote_path = os.path.join(printfile.printer_profile.slug, filename)
+        remote_path = os.path.join(self.SMB_REMOTE_PATH, printfile.printer_profile.slug, filename)
         
-        if not self.file_exists_on_nas(remote_path):
-            raise(Exception(f'Path: {remote_path} not found in NAS.'))
+        #if not self.file_exists_on_nas(remote_path):
+        #    raise(Exception(f'Path: {remote_path} not found in NAS.'))
         
         self.download_gcode_from_nas(remote_path, local_path)
 
