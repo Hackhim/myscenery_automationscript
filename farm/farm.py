@@ -190,12 +190,17 @@ class Farm():
         matched_printers = self.match_printer_printqueue_group()
 
         for (printer, ftp) in matched_printers:
-            t = threading.Thread(target=self.launch_single_print, args=(ftp, printer,))
-            threads.append(t)
-            t.start()
+            try:
+                self.launch_single_print(ftp, printer)
+            except Exception as e:
+                print(f'{printer}\n{ftp}', file=sys.stderr)
+                print(e, file=sys.stderr)
+            #t = threading.Thread(target=self.launch_single_print, args=(ftp, printer,))
+            #threads.append(t)
+            #t.start()
         
-        for t in threads:
-            t.join()
+        #for t in threads:
+            #t.join()
 
     def match_printer_printqueue_group(self):
         files_to_print = []
