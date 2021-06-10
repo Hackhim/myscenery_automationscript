@@ -101,7 +101,7 @@ class Farm():
         userID = os.getenv('SMB_USERID')
         password = os.getenv('SMB_PASSWD')
         host = os.getenv('SMB_HOST')
-        port = 455
+        port = 445
         client_machine_name=''
         server_name=''
         domain_name=''
@@ -217,6 +217,7 @@ class Farm():
 
     def launch_single_print(self, file_to_print, printer):
         printfile = file_to_print.print_model.get_gcode_for_printer_profile(printer.record.profile)
+        print(printfile)
         filename = printfile.name
         local_path = f"{Farm.GCODES_DIR}/{uuid.uuid4()}_{filename}"
         remote_path = os.path.join(printfile.printer_profile.slug, filename)

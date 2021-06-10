@@ -18,7 +18,7 @@ class PrintFileRecord(Base):
     printer_profile = SingleRecordLinkField('Printer Profile', linked_class='farm.model.printer.PrinterProfileRecord')
 
     def __repr__(self):
-        return f'<PrintFileRecord: name=({self.name})>'
+        return f'<PrintFileRecord: name=({self.name}), profile={self.printer_profile}>'
 
     def get_weight_used(self, filament_profile):
         r = filament_profile.diameter / 2
