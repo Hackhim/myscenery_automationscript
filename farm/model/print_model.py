@@ -1,4 +1,4 @@
-from pyrtable.fields import StringField, MultipleRecordLinkField
+from pyrtable.fields import StringField, MultipleRecordLinkField, IntegerField
 
 from . import Base
 
@@ -7,6 +7,7 @@ class PrintModelRecord(Base):
         table_id = 'TPROD_PrintModel'
     
     name = StringField('Name', read_only=True)
+    print_time = IntegerField('PrintTime', read_only=True)
     printfiles = MultipleRecordLinkField('Gcodes', linked_class='farm.model.printfile.PrintFileRecord')
 
     def __repr__(self):

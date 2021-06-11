@@ -35,7 +35,7 @@ class Farm():
             t.join()
 
     def __add_filetoprint_to_printqueue(self, file_to_print):
-        file_to_print.printfile
+        #file_to_print.printfile
         self.printqueue.append(file_to_print)
 
     def __create_printer(self, printer_record):
@@ -62,7 +62,7 @@ class Farm():
             t.join()
         
         #Order by priority and order name and printfile time
-        self.printqueue = sorted(sorted(sorted(self.printqueue, key=lambda ftp: ftp.printfile.time, reverse=True), key=lambda ftp: ftp.name), key=lambda ftp: ftp.priority.name, reverse=True)
+        self.printqueue = sorted(sorted(sorted(self.printqueue, key=lambda ftp: ftp.print_model.print_time, reverse=True), key=lambda ftp: ftp.name), key=lambda ftp: ftp.priority.name, reverse=True)
 
     def __create_printers(self):
         self.printers = []
