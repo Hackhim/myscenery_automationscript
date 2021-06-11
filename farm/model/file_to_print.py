@@ -30,7 +30,7 @@ class FileToPrintRecord(Base):
 
     @classmethod
     def get_next_files(cls):
-        return cls.objects.filter(prints__empty=True)
+        return cls.objects.filter(prints__empty=True, priority__empty=False)
     
     
     @classmethod

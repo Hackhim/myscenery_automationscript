@@ -74,7 +74,7 @@ class Farm():
             t.start()
         for t in threads:
             t.join()
-    
+
     def refresh_printers(self):
         threads = []
         for printer in self.printers:
