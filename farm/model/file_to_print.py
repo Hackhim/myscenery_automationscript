@@ -20,7 +20,7 @@ class FileToPrintRecord(Base):
     priority = SingleSelectionField('Priority', choices=Priority, read_only=True)
     color = SingleSelectionField('Color', choices=Color, read_only=True)
 
-    printfile = SingleRecordLinkField('PrintFile', linked_class='farm.model.printfile.PrintFileRecord')
+    #printfile = SingleRecordLinkField('PrintFile', linked_class='farm.model.printfile.PrintFileRecord')
     print_model = SingleRecordLinkField('PrintModel', linked_class='farm.model.print_model.PrintModelRecord')
     prints = MultipleRecordLinkField('Prints', linked_class='farm.model.print.PrintRecord')
     printer_group = SingleRecordLinkField('PrinterGroup', linked_class='farm.model.printer.PrinterGroupRecord')
