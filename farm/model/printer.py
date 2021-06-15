@@ -181,7 +181,8 @@ class Printer:
                 if active_print:
                     active_print.finished()
                     if self.record.filament:
-                        self.record.filament.used(active_print.file_to_print.printfile.get_weight_used(self.record.filament.profile))
+                        printfile = active_print.file_to_print.print_model.get_gcode_for_printer_profile(self.record.profile)
+                        self.record.filament.used(printfile.get_weight_used(self.record.filament.profile))
             elif (self.is_harvest() or self.is_operational()) and octo_status == Status.PRINTING:
                 self.record.clean_plate = False
                 self.set_status(Status.PRINTING)
