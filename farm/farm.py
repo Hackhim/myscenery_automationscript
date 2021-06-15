@@ -245,6 +245,6 @@ class Farm():
         if(print_launched):
             print_ = PrintRecord(state=State.IN_PROGRESS, datetime_started=datetime.datetime.now(), printer=printer.record, file_to_print=file_to_print)
             print_.save()
-            self.launched_prints.append(print_)
+            self.launched_prints.append((print_, printfile))
         
         os.remove(local_path)

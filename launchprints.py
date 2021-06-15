@@ -8,8 +8,8 @@ def main():
     
     if len(farm.launched_prints) > 0:
         print(f'<{datetime.datetime.now()}> LAUNCHED PRINTS:')
-        for launched_print in farm.launched_prints:
-            print(f' [+] {launched_print}')
+        for launched_print, printfile in farm.launched_prints:
+            print(f' [+] {launched_print} -> {printfile}')
 
 
 
