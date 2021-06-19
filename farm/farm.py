@@ -233,7 +233,7 @@ class Farm():
         filename = printfile.name
         remote_filename = urllib.parse.quote_plus(filename)
         local_path = f"{Farm.GCODES_DIR}/{uuid.uuid4()}_{filename}"
-        remote_path = os.path.join(self.SMB_REMOTE_PATH, printfile.printer_profile.slug, remote_filename)
+        remote_path = os.path.join(self.SMB_REMOTE_PATH, printfile.printer_profile.slug, filename)
         
         #if not self.file_exists_on_nas(remote_path):
         #    raise(Exception(f'Path: {remote_path} not found in NAS.'))
