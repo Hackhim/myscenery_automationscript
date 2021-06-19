@@ -262,7 +262,8 @@ class Printer:
 
     def upload(self, local_path, location='local', select=False, to_print=False, userdata=None, path=None):
         remote_path = Printer.UPLOAD_DIR
-        return self.octoprint.upload(local_path, select=select, print=to_print, userdata=userdata, path=remote_path)
+        self.octoprint.upload(local_path, select=select, print=to_print, userdata=userdata, path=remote_path)
+        return True
 
     def print(self, remote_filename):
         try:

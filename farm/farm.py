@@ -231,7 +231,7 @@ class Farm():
     def launch_single_print(self, file_to_print, printer):
         printfile = file_to_print.print_model.get_gcode_for_printer_profile(printer.record.profile)
         filename = printfile.name
-        remote_filename = urllib.parse.quote_plus(filename)
+        #remote_filename = urllib.parse.quote_plus(filename)
         local_path = f"{Farm.GCODES_DIR}/{uuid.uuid4()}_{filename}"
         remote_path = os.path.join(self.SMB_REMOTE_PATH, printfile.printer_profile.slug, filename)
         
@@ -241,8 +241,8 @@ class Farm():
         self.download_gcode_from_nas(remote_path, local_path)
 
         printer.clear_upload_directory()
-        printer.upload( (remote_filename, open(local_path, 'rb')) )
-        print_launched = printer.print(remote_filename)
+        print_launched = printer.upload( (filename, open(local_path, 'rb')), to_print=True)
+        #print_launched = printer.print(remote_filename)
 
         if(print_launched):
             print_ = PrintRecord(state=State.IN_PROGRESS, datetime_started=datetime.datetime.now(), printer=printer.record, file_to_print=file_to_print)
