@@ -9,6 +9,8 @@ class Priority(enum.Enum):
     A_NORMAL = 'Normal'
     B_MEDIUM = 'Medium'
     C_HIGH = 'High'
+    D_VERYHIGH = '+High'
+    D_VERYVERYHIGH = '++High'
 
 
 class FileToPrintRecord(Base):
