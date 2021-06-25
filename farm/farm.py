@@ -54,13 +54,14 @@ class Farm():
         files_to_print = list(FileToPrintRecord.get_next_files())
         
         files_to_print = sorted(sorted(files_to_print, key=lambda ftp: ftp.name), key=lambda ftp: ftp.priority.name, reverse=True)
-        threads = []
-        for ftp in files_to_print[:printqueue_limit]:
-            t = threading.Thread(target=self.__add_filetoprint_to_printqueue, args=(ftp,))
-            threads.append(t)
-            t.start()
-        for t in threads:
-            t.join()
+        self.printqueue.extend(files_to_print[:printqueue_limit])
+        #threads = []
+        #for ftp in files_to_print[:printqueue_limit]:
+        #    t = threading.Thread(target=self.__add_filetoprint_to_printqueue, args=(ftp,))
+        #    threads.append(t)
+        #    t.start()
+        #for t in threads:
+        #    t.join()
         
         #Order by priority and order name and printfile time
         self.printqueue = sorted(sorted(sorted(self.printqueue, key=lambda ftp: ftp.print_model.print_time, reverse=True), key=lambda ftp: ftp.name), key=lambda ftp: ftp.priority.name, reverse=True)
