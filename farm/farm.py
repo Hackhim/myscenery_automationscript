@@ -49,7 +49,7 @@ class Farm():
     def refresh_printer(self, printer):
         printer.refresh_status()
 
-    def __create_printqueue(self, printqueue_limit=100):
+    def __create_printqueue(self, printqueue_limit=1500):
         self.printqueue = []
         files_to_print = list(FileToPrintRecord.get_next_files())
         
