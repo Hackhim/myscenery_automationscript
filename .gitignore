@@ -142,3 +142,7 @@ airtable_secrets.yaml
 
 #VS Code
 .vscode/
+
+# Cron files
+cron
+launchprints_cron.sh

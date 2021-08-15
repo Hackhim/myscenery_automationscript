@@ -238,11 +238,15 @@ class Printer:
                 and self.fit_in_bed(printfile)
             )
         elif not self.record.group and not filetoprint.printer_group:
+            have_enough_filament = self.have_enough_filament_for(printfile)
+            colors_match = self.does_filetoprint_color_match(filetoprint)
+            fit_in_bed = self.fit_in_bed(printfile)
             can_print = (
-                self.have_enough_filament_for(printfile)
-                and self.does_filetoprint_color_match(filetoprint)
-                and self.fit_in_bed(printfile)
+                have_enough_filament
+                and colors_match
+                and fit_in_bed
             )
+
         
         return can_print
             
