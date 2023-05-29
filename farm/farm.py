@@ -35,10 +35,6 @@ class Farm:
         for t in threads:
             t.join()
 
-    def __add_filetoprint_to_printqueue(self, file_to_print):
-        # file_to_print.printfile
-        self.printqueue.append(file_to_print)
-
     def __create_printer(self, printer_record):
         printer_record.profile
         if printer_record.filament:
@@ -59,13 +55,6 @@ class Farm:
             reverse=True,
         )
         self.printqueue.extend(files_to_print[:printqueue_limit])
-        # threads = []
-        # for ftp in files_to_print[:printqueue_limit]:
-        #    t = threading.Thread(target=self.__add_filetoprint_to_printqueue, args=(ftp,))
-        #    threads.append(t)
-        #    t.start()
-        # for t in threads:
-        #    t.join()
 
         # Order by priority and order name and printfile time
         self.printqueue = sorted(
@@ -156,13 +145,7 @@ class Farm:
     def download_gcode_from_nas(self, remote_path, local_path):
         f = open(local_path, "wb")
         self.smb_con.retrieveFile(self.share.name, remote_path, f)
-        f.close()
-
-    #    def get_next_printer(self):
-    #        next_printer = PrinterRecord.get_next()
-    #        if next_printer:
-    #            next_printer = self.__find_printer_by_record(next_printer)
-    #        return next_printer
+        f.close()xt_printer
 
     def launch_prints(self):
         threads = []
@@ -174,12 +157,6 @@ class Farm:
             except Exception as e:
                 print(f"{printer}\n{ftp}", file=sys.stderr)
                 print(e, file=sys.stderr)
-        #    t = threading.Thread(target=self.launch_single_print, args=(ftp, printer,))
-        #    threads.append(t)
-        #    t.start()
-        #
-        # for t in threads:
-        #    t.join()
 
     def match_printer_printqueue(self):
         files_to_print = []
