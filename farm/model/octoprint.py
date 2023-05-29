@@ -18,28 +18,32 @@ class Octoprint(OctoRest):
         self._check_response(response)
 
         return response.json()
-    
+
     def _post(self, path, data=None, files=None, json=None, ret=True):
         url = urlparse.urljoin(self.url, path)
         if not files:
             response = self.session.post(url, data=data, files=files, json=json)
         else:
-            data.update({
-                'file': files['file'],
-            })
+            data.update(
+                {
+                    "file": files["file"],
+                }
+            )
             file_data = encoder.MultipartEncoder(data)
 
             headers = {}
             headers.update(self.session.headers)
-            headers.update({'Content-Type': file_data.content_type})
+            headers.update({"Content-Type": file_data.content_type})
 
-            response = self.session.post(url, headers=headers, data=file_data, json=json)
+            response = self.session.post(
+                url, headers=headers, data=file_data, json=json
+            )
 
         self._check_response(response)
         if ret:
             return response.json()
-    
-    def new_folder(self, folder_name, location='local'):
+
+    def new_folder(self, folder_name, location="local"):
         """Upload file or create folder
         http://docs.octoprint.org/en/master/api/files.html#upload-file-or-create-folder
 
@@ -48,14 +52,20 @@ class Octoprint(OctoRest):
         is currently only supported on the local file system.
         """
         data = {
-            'foldername': folder_name,
+            "foldername": folder_name,
         }
-        return self._post('/api/files/{}'.format(location), data=data)
+        return self._post("/api/files/{}".format(location), data=data)
 
-
-
-    def upload(self, file, *, location='local',
-               select=False, print=False, userdata=None, path=None):
+    def upload(
+        self,
+        file,
+        *,
+        location="local",
+        select=False,
+        print=False,
+        userdata=None,
+        path=None
+    ):
         """Upload file or create folder
         http://docs.octoprint.org/en/master/api/files.html#upload-file-or-create-folder
 
@@ -63,15 +73,11 @@ class Octoprint(OctoRest):
         It can be a path or a tuple with a filename and a file-like object
         """
         with self._file_tuple(file) as file_tuple:
-            files = {'file': file_tuple}
-            data = {
-                'select': str(select).lower(),
-                'print': str(print).lower()
-            }
+            files = {"file": file_tuple}
+            data = {"select": str(select).lower(), "print": str(print).lower()}
             if userdata:
-                data['userdata'] = userdata
+                data["userdata"] = userdata
             if path:
-                data['path'] = path
+                data["path"] = path
 
-            return self._post('/api/files/{}'.format(location),
-                              files=files, data=data)
+            return self._post("/api/files/{}".format(location), files=files, data=data)
