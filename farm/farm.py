@@ -25,7 +25,7 @@ class Farm:
 
         init_functions = [
             self.__create_printers,
-            # self.__create_printqueue,
+            self.__create_printqueue,
             self.__connect_to_smb,
         ]
         threads = []
@@ -49,12 +49,19 @@ class Farm:
         printer.refresh_status()
 
     def check_auto_eject_printers(self):
+        threads = []
         for printer in self.printers:
             if printer.is_auto_eject() and printer.is_harvest():
                 print()
                 print("AUTOEJECT:")
                 print(printer)
-                self._handle_printer_auto_eject(printer)
+                t = threading.Thread(
+                    target=self._handle_printer_auto_eject, args=(printer,)
+                )
+                threads.append(t)
+                t.start()
+        for t in threads:
+            t.join()
 
     def _handle_printer_auto_eject(self, printer: Printer):
         if printer.get_bed_temperature() <= printer.get_auto_eject_temperature():
@@ -78,16 +85,12 @@ class Farm:
             waiting_time_between_checks = 5  # seconds
             for _ in range(max_waiting_time // waiting_time_between_checks):
                 time.sleep(waiting_time_between_checks)
-                print("Check if autoject ended.")
                 still_printing = printer.is_currently_printing()
-                print(still_printing)
                 if not still_printing:
-                    print("AUTO EJECT FINISHED")
                     break
 
         os.remove(local_path)
         printer.set_status(Status.OPERATIONAL)
-        input("Press a key to continue...")
 
     def __create_printqueue(self, printqueue_limit=200):
         self.printqueue = []

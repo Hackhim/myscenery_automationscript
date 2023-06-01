@@ -282,11 +282,8 @@ class Printer:
         return self.record.status == Status.PRINTING
 
     def is_currently_printing(self):
-        print("IS CURRENTLY PRINTING")
         raw_octo_status = self.octoprint.state()
-        print(raw_octo_status)
         printer_status = status_from_octoprint.get(raw_octo_status)
-        print(printer_status)
         if printer_status is None:
             raise ValueError(f"Unkown printer status: {raw_octo_status}")
         return printer_status == Status.PRINTING
