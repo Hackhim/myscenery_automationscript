@@ -24,7 +24,7 @@ class Farm:
 
         init_functions = [
             self.__create_printers,
-            self.__create_printqueue,
+            # self.__create_printqueue,
             self.__connect_to_smb,
         ]
         threads = []
