@@ -81,3 +81,7 @@ class Octoprint(OctoRest):
                 data["path"] = path
 
             return self._post("/api/files/{}".format(location), files=files, data=data)
+
+    def get_bed_temperature(self) -> float:
+        data = self._get("/api/printer/bed")
+        return data["actual"]
