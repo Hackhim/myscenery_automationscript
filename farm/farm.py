@@ -4,7 +4,7 @@ import os
 import uuid
 import sys
 import urllib
-
+import time
 
 from smb.SMBConnection import SMBConnection
 from dotenv import load_dotenv
@@ -74,12 +74,20 @@ class Farm:
             (filename, open(local_path, "rb")), to_print=True
         )
         if print_launched:
-            # Wait for gcode execution finished ?
-            pass
+            max_waiting_time = 3 * 60  # 3 minutes
+            waiting_time_between_checks = 5  # seconds
+            for _ in range(max_waiting_time // waiting_time_between_checks):
+                time.sleep(waiting_time_between_checks)
+                print("Check if autoject ended.")
+                still_printing = printer.is_currently_printing()
+                print(still_printing)
+                if not still_printing:
+                    print("AUTO EJECT FINISHED")
+                    break
 
         os.remove(local_path)
-        input("Press a key to continue...")
         printer.set_status(Status.OPERATIONAL)
+        input("Press a key to continue...")
 
     def __create_printqueue(self, printqueue_limit=200):
         self.printqueue = []
