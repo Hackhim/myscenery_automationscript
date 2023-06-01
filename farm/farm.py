@@ -50,21 +50,19 @@ class Farm:
             print("AUTOEJECT:")
             print(printer)
             self._handle_printer_auto_eject(printer)
-    
+
     def _handle_printer_auto_eject(self, printer: Printer):
         if printer.get_bed_temperature() <= printer.get_auto_eject_temperature():
             self._launch_auto_eject_gcode(printer)
 
     def _launch_auto_eject_gcode(self, printer: Printer):
         filename = printer.record.profile.eject_gcode
-        if len(filename) == 0 or not filename.endswith('.gcode'):
+        if len(filename) == 0 or not filename.endswith(".gcode"):
             print("Invalid auto-eject filename.")
             return
-        
+
         local_path = f"{Farm.GCODES_DIR}/{uuid.uuid4()}_{filename}"
-        remote_path = os.path.join(
-            self.SMB_REMOTE_PATH, "AutoEjectGcode", filename
-        )
+        remote_path = os.path.join(self.SMB_REMOTE_PATH, "AutoEjectGcode", filename)
         self.download_gcode_from_nas(remote_path, local_path)
 
         print_launched = printer.upload(
@@ -76,7 +74,6 @@ class Farm:
 
         os.remove(local_path)
         printer.set_status(Status.OPERATIONAL)
-        
 
     def __create_printqueue(self, printqueue_limit=200):
         self.printqueue = []
@@ -178,7 +175,7 @@ class Farm:
     def download_gcode_from_nas(self, remote_path, local_path):
         f = open(local_path, "wb")
         self.smb_con.retrieveFile(self.share.name, remote_path, f)
-        f.close()xt_printer
+        f.close()
 
     def launch_prints(self):
         threads = []
