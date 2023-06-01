@@ -43,6 +43,8 @@ class Farm:
         self.printers.append(printer)
 
     def refresh_printer(self, printer: Printer):
+        print("REFRESHING")
+        print(printer)
         printer.refresh_status()
 
         if printer.is_auto_eject() and printer.is_harvest():
