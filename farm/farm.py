@@ -43,14 +43,14 @@ class Farm:
         self.printers.append(printer)
 
     def refresh_printer(self, printer: Printer):
-        print("REFRESHING")
-        print(printer)
+        print("REFRESHING", file=sys.stderr)
+        print(printer, file=sys.stderr)
         printer.refresh_status()
 
         if printer.is_auto_eject() and printer.is_harvest():
-            print()
-            print("AUTOEJECT:")
-            print(printer)
+            print(file=sys.stderr)
+            print("AUTOEJECT:", file=sys.stderr)
+            print(printer, file=sys.stderr)
             self._handle_printer_auto_eject(printer)
 
     def _handle_printer_auto_eject(self, printer: Printer):
@@ -60,7 +60,7 @@ class Farm:
     def _launch_auto_eject_gcode(self, printer: Printer):
         filename = printer.record.profile.eject_gcode
         if len(filename) == 0 or not filename.endswith(".gcode"):
-            print("Invalid auto-eject filename.")
+            print("Invalid auto-eject filename.", file=sys.stderr)
             return
 
         local_path = f"{Farm.GCODES_DIR}/{uuid.uuid4()}_{filename}"
