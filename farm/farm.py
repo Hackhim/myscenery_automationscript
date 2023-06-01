@@ -10,14 +10,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from .model.printer import Printer, PrinterRecord
+from .model.printer import Printer, PrinterRecord, Status
 from .model.file_to_print import FileToPrintRecord
 from .model.print import PrintRecord, State
 
 
 class Farm:
     GCODES_DIR = os.getenv("LOCAL_GCODES_FOLDER_PATH")
-    SMB_REMOTE_PATH = os.getenv("REMOTE_GCODES_FOLDER_PATH")
+    SMB_REMOTE_PATH = os.getenv("REMOTE_GCODES_FOLDER_PATH", "")
 
     def __init__(self):
         self.launched_prints = []
@@ -42,8 +42,38 @@ class Farm:
         printer = Printer(printer_record)
         self.printers.append(printer)
 
-    def refresh_printer(self, printer):
+    def refresh_printer(self, printer: Printer):
         printer.refresh_status()
+
+        if printer.is_auto_eject() and printer.is_harvest():
+            self._handle_printer_auto_eject(printer)
+    
+    def _handle_printer_auto_eject(self, printer: Printer):
+        if printer.get_bed_temperature() <= printer.get_auto_eject_temperature():
+            self._launch_auto_eject_gcode(printer)
+
+    def _launch_auto_eject_gcode(self, printer: Printer):
+        filename = printer.record.profile.eject_gcode
+        if len(filename) == 0 or not filename.endswith('.gcode'):
+            print("Invalid auto-eject filename.")
+            return
+        
+        local_path = f"{Farm.GCODES_DIR}/{uuid.uuid4()}_{filename}"
+        remote_path = os.path.join(
+            self.SMB_REMOTE_PATH, "AutoEject", filename
+        )
+        self.download_gcode_from_nas(remote_path, local_path)
+
+        print_launched = printer.upload(
+            (filename, open(local_path, "rb")), to_print=True
+        )
+        if print_launched:
+            # Wait for gcode execution finished ?
+            pass
+
+        os.remove(local_path)
+        printer.set_status(Status.OPERATIONAL)
+        
 
     def __create_printqueue(self, printqueue_limit=200):
         self.printqueue = []
