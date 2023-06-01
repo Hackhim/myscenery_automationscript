@@ -5,6 +5,7 @@ import uuid
 import sys
 import urllib
 
+
 from smb.SMBConnection import SMBConnection
 from dotenv import load_dotenv
 
@@ -35,7 +36,6 @@ class Farm:
         for t in threads:
             t.join()
 
-        print("INITIALIZED")
         self.check_auto_eject_printers()
 
     def __create_printer(self, printer_record):
@@ -49,10 +49,7 @@ class Farm:
         printer.refresh_status()
 
     def check_auto_eject_printers(self):
-        print("CHECKING AUTO EJECT")
         for printer in self.printers:
-            print("CHECKING AUTO EJECT:")
-            print(printer)
             if printer.is_auto_eject() and printer.is_harvest():
                 print()
                 print("AUTOEJECT:")
@@ -81,6 +78,7 @@ class Farm:
             pass
 
         os.remove(local_path)
+        input("Press a key to continue...")
         printer.set_status(Status.OPERATIONAL)
 
     def __create_printqueue(self, printqueue_limit=200):
