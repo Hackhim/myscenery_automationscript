@@ -51,6 +51,9 @@ class PrinterProfileRecord(Base):
     slug = StringField("Slug", read_only=True)
     brand = SingleSelectionField("Brand", read_only=True)
     manufacturer = SingleSelectionField("Manufacturer", read_only=True)
+    auto_eject = BooleanField("Auto Eject", read_only=True)
+    auto_eject_temperature = IntegerField("Auto Eject Temperature", read_only=True)
+    eject_gcode = StringField("Eject Gcode", read_only=True)
     # price = IntegerField('Price', read_only=True)
     size_x = IntegerField("Size x", read_only=True)
     size_y = IntegerField("Size y", read_only=True)
@@ -147,7 +150,7 @@ class Printer:
     def __init__(self, record):
         self.record = record
         self.octoprint_timeout = OCTOPRINT_TIMEOUT
-        self.octoprint = None
+        self.octoprint: Octoprint = None
 
         self.create_octoprint_connection()
         self.init_upload_directory()
@@ -250,6 +253,9 @@ class Printer:
                 self.record.save()
             else:
                 self.set_status(octo_status)
+
+    def is_auto_eject(self):
+        return self.record.profile.auto_eject
 
     def is_disconnected(self):
         return (
@@ -357,3 +363,12 @@ class Printer:
             self.refresh_status()
         except Exception as e:
             print(e)
+
+    def get_bed_temperature(self) -> float:
+        return self.octoprint.get_bed_temperature()
+
+    def get_auto_eject_temperature(self) -> int:
+        return self.record.profile.auto_eject_temperature
+
+    def get_eject_gcode_filenames(self) -> str:
+        return self.record.profile.eject_gcode
