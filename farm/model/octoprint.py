@@ -84,4 +84,6 @@ class Octoprint(OctoRest):
 
     def get_bed_temperature(self) -> float:
         data = self._get("/api/printer/bed")
+        print("OCTOPRINT:")
+        print(data)
         return data["actual"]

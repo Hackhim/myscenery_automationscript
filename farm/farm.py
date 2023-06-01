@@ -46,6 +46,9 @@ class Farm:
         printer.refresh_status()
 
         if printer.is_auto_eject() and printer.is_harvest():
+            print()
+            print("AUTOEJECT:")
+            print(printer)
             self._handle_printer_auto_eject(printer)
     
     def _handle_printer_auto_eject(self, printer: Printer):
