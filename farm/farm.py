@@ -35,6 +35,9 @@ class Farm:
         for t in threads:
             t.join()
 
+        print("INITIALIZED")
+        self.check_auto_eject_printers()
+
     def __create_printer(self, printer_record):
         printer_record.profile
         if printer_record.filament:
@@ -43,15 +46,18 @@ class Farm:
         self.printers.append(printer)
 
     def refresh_printer(self, printer: Printer):
-        print("REFRESHING", file=sys.stderr)
-        print(printer, file=sys.stderr)
         printer.refresh_status()
 
-        if printer.is_auto_eject() and printer.is_harvest():
-            print(file=sys.stderr)
-            print("AUTOEJECT:", file=sys.stderr)
-            print(printer, file=sys.stderr)
-            self._handle_printer_auto_eject(printer)
+    def check_auto_eject_printers(self):
+        print("CHECKING AUTO EJECT")
+        for printer in self.printers:
+            print("CHECKING AUTO EJECT:")
+            print(printer)
+            if printer.is_auto_eject() and printer.is_harvest():
+                print()
+                print("AUTOEJECT:")
+                print(printer)
+                self._handle_printer_auto_eject(printer)
 
     def _handle_printer_auto_eject(self, printer: Printer):
         if printer.get_bed_temperature() <= printer.get_auto_eject_temperature():
