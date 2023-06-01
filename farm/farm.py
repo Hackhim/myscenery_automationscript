@@ -60,7 +60,7 @@ class Farm:
         
         local_path = f"{Farm.GCODES_DIR}/{uuid.uuid4()}_{filename}"
         remote_path = os.path.join(
-            self.SMB_REMOTE_PATH, "AutoEject", filename
+            self.SMB_REMOTE_PATH, "AutoEjectGcode", filename
         )
         self.download_gcode_from_nas(remote_path, local_path)
 
