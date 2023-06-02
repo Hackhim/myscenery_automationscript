@@ -255,7 +255,7 @@ class Printer:
                 self.set_status(octo_status)
 
     def is_auto_eject(self):
-        return self.record.profile.auto_eject
+        return self.record.profile.auto_eject and self.record.automated
 
     def is_disconnected(self):
         return (
