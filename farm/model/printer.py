@@ -82,6 +82,7 @@ class PrinterRecord(Base):
     status = SingleSelectionField("Status", choices=Status)
     url = StringField("Printer URL", read_only=True)
     automated = BooleanField("Automated", read_only=True)
+    auto_eject = BooleanField("Auto Eject", read_only=True)
     clean_plate = BooleanField("Clean Plate")
     camera_url = StringField("Camera URL", read_only=True)
     octoprint_api_key = StringField("Octoprint API Key", read_only=True)
@@ -255,7 +256,11 @@ class Printer:
                 self.set_status(octo_status)
 
     def is_auto_eject(self):
-        return self.record.profile.auto_eject and self.record.automated
+        return (
+            self.record.automated
+            and self.record.profile.auto_eject
+            and self.record.auto_eject
+        )
 
     def is_disconnected(self):
         return (
